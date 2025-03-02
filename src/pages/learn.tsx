@@ -107,7 +107,7 @@ export default function Learn() {
   return (
     <>
       <Head>
-        <title>Learn | KidsFin</title>
+        <title>Learn | Cash Critters</title>
         <meta name="description" content="Learn about money and finance" />
       </Head>
 

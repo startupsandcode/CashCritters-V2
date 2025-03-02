@@ -117,7 +117,7 @@ export default function Savings() {
   return (
     <>
       <Head>
-        <title>Savings Tracker | KidsFin</title>
+        <title>Savings Tracker | Cash Critters</title>
         <meta name="description" content="Track your savings goals" />
       </Head>
 

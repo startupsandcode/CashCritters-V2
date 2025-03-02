@@ -136,7 +136,7 @@ export default function CoinCollector() {
   return (
     <>
       <Head>
-        <title>Coin Collector | KidsFin</title>
+        <title>Coin Collector | Cash Critters</title>
         <meta name="description" content="Collect coins and learn their values" />
       </Head>
 

@@ -10,7 +10,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>KidsFin - Fun Financial Education for Kids</title>
+        <title>Cash Critters - Fun Financial Education for Kids</title>
         <meta name="description" content="Learn about money, saving, and financial concepts in a fun, interactive way designed for kids." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -28,7 +28,7 @@ export default function Home() {
                     Make Learning About Money <span className="text-primary">Fun!</span>
                   </h1>
                   <p className="text-xl text-muted-foreground mb-8">
-                    KidsFin helps children understand financial concepts through interactive games, challenges, and rewards.
+                    Cash Critters helps children understand financial concepts through interactive games, challenges, and rewards.
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4">
                     <Link href="/auth/signup">
@@ -116,7 +116,7 @@ export default function Home() {
           <div className="container">
             <div className="flex flex-col md:flex-row justify-between items-center">
               <div className="mb-6 md:mb-0">
-                <h2 className="text-2xl font-bold text-primary">KidsFin</h2>
+                <h2 className="text-2xl font-bold text-primary">Cash Critters</h2>
                 <p className="text-muted-foreground">Financial education made fun for kids</p>
               </div>
               <div className="flex gap-8">
@@ -127,7 +127,7 @@ export default function Home() {
               </div>
             </div>
             <div className="mt-8 pt-8 border-t text-center text-muted-foreground">
-              <p>© {new Date().getFullYear()} KidsFin. All rights reserved.</p>
+              <p>© {new Date().getFullYear()} Cash Critters. All rights reserved.</p>
             </div>
           </div>
         </footer>

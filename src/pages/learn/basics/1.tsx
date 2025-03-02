@@ -8,6 +8,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ArrowLeft, ArrowRight, DollarSign, CheckCircle } from "lucide-react";
+import Image from "next/image";
 
 export default function WhatIsMoney() {
   const { user, loading } = useAuth();
@@ -71,11 +72,14 @@ export default function WhatIsMoney() {
         <div className="space-y-4">
           <p>Long ago, people used all sorts of things as money - seashells, beads, and even salt!</p>
           <div className="flex justify-center my-6">
-            <img 
-              src="https://images.unsplash.com/photo-1574607383476-f517f260d30b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" 
-              alt="Ancient coins" 
-              className="rounded-lg h-48 object-cover"
-            />
+            <div className="relative h-48 w-full max-w-[500px]">
+              <Image 
+                src="https://images.unsplash.com/photo-1574607383476-f517f260d30b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" 
+                alt="Ancient coins" 
+                className="rounded-lg object-cover"
+                fill
+              />
+            </div>
           </div>
           <p>Eventually, people started using coins made of valuable metals like gold and silver. These were easier to carry around and everyone agreed on their value.</p>
         </div>
@@ -87,13 +91,16 @@ export default function WhatIsMoney() {
         <div className="space-y-4">
           <p>Carrying lots of coins was heavy! So people invented paper money. At first, paper money was like a receipt - you could trade it for gold at a bank.</p>
           <div className="flex justify-center my-6">
-            <img 
-              src="https://images.unsplash.com/photo-1561414927-6d86591d0c4f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" 
-              alt="Paper money" 
-              className="rounded-lg h-48 object-cover"
-            />
+            <div className="relative h-48 w-full max-w-[500px]">
+              <Image 
+                src="https://images.unsplash.com/photo-1561414927-6d86591d0c4f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" 
+                alt="Paper money" 
+                className="rounded-lg object-cover"
+                fill
+              />
+            </div>
           </div>
-          <p>Today, paper money has value because the government says it does and because we all agree to use it. This is called "fiat money."</p>
+          <p>Today, paper money has value because the government says it does and because we all agree to use it. This is called &quot;fiat money.&quot;</p>
         </div>
       ),
     },
@@ -101,15 +108,18 @@ export default function WhatIsMoney() {
       title: "Digital Money",
       content: (
         <div className="space-y-4">
-          <p>These days, a lot of money exists only as numbers in computers! When your parents use a debit card or pay for something online, they're using digital money.</p>
+          <p>These days, a lot of money exists only as numbers in computers! When your parents use a debit card or pay for something online, they&apos;re using digital money.</p>
           <div className="flex justify-center my-6">
-            <img 
-              src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" 
-              alt="Digital payment" 
-              className="rounded-lg h-48 object-cover"
-            />
+            <div className="relative h-48 w-full max-w-[500px]">
+              <Image 
+                src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" 
+                alt="Digital payment" 
+                className="rounded-lg object-cover"
+                fill
+              />
+            </div>
           </div>
-          <p>Digital money is convenient because you don't have to carry it around, and you can send it to people far away instantly!</p>
+          <p>Digital money is convenient because you don&apos;t have to carry it around, and you can send it to people far away instantly!</p>
         </div>
       ),
     },
@@ -119,11 +129,14 @@ export default function WhatIsMoney() {
         <div className="space-y-4">
           <p>Money helps us get the things we need to live, like food and clothes. It also lets us save for things we want in the future!</p>
           <div className="flex justify-center my-6">
-            <img 
-              src="https://images.unsplash.com/photo-1579621970588-a35d0e7ab9b6?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" 
-              alt="Saving money" 
-              className="rounded-lg h-48 object-cover"
-            />
+            <div className="relative h-48 w-full max-w-[500px]">
+              <Image 
+                src="https://images.unsplash.com/photo-1579621970588-a35d0e7ab9b6?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=80" 
+                alt="Saving money" 
+                className="rounded-lg object-cover"
+                fill
+              />
+            </div>
           </div>
           <p>Learning how to use money wisely is an important skill that will help you throughout your whole life!</p>
         </div>
@@ -173,7 +186,7 @@ export default function WhatIsMoney() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-lg mb-6">
-                    Great job! You've learned about what money is, its history, and why it's important.
+                    Great job! You&apos;ve learned about what money is, its history, and why it&apos;s important.
                   </p>
                   <p className="mb-6">
                     Ready to continue your financial journey?

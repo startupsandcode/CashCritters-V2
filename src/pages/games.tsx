@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Gamepad2, Lock, Trophy, Star } from "lucide-react";
+import Image from "next/image";
 
 export default function Games() {
   const { user, loading } = useAuth();
@@ -94,11 +95,12 @@ export default function Games() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {games.map((game, index) => (
                 <Card key={index} className={game.locked ? "opacity-70" : ""}>
-                  <div className="relative">
-                    <img 
+                  <div className="relative h-48 w-full">
+                    <Image 
                       src={game.image} 
                       alt={game.title}
-                      className="w-full h-48 object-cover rounded-t-lg"
+                      className="object-cover rounded-t-lg"
+                      fill
                     />
                     <div className="absolute top-2 right-2 bg-card px-2 py-1 rounded text-xs font-medium">
                       {game.level}

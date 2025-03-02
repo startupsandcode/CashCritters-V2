@@ -69,7 +69,7 @@ export default function Games() {
   return (
     <>
       <Head>
-        <title>Games | KidsFin</title>
+        <title>Games | Cash Critters</title>
         <meta name="description" content="Play fun financial education games" />
       </Head>
 

@@ -41,8 +41,8 @@ export default function Dashboard() {
   return (
     <>
       <Head>
-        <title>Dashboard | KidsFin</title>
-        <meta name="description" content="Your KidsFin dashboard" />
+        <title>Dashboard | Cash Critters</title>
+        <meta name="description" content="Your Cash Critters dashboard" />
       </Head>
 
       <div className="flex flex-col min-h-screen">
@@ -50,7 +50,7 @@ export default function Dashboard() {
         
         <main className="flex-1 py-8">
           <div className="container">
-            <h1 className="text-3xl font-bold mb-2">Welcome to KidsFin!</h1>
+            <h1 className="text-3xl font-bold mb-2">Welcome to Cash Critters!</h1>
             <p className="text-muted-foreground mb-8">Track your progress and continue your financial journey</p>
             
             {/* Progress Overview */}

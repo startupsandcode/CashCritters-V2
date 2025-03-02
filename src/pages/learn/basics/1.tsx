@@ -147,7 +147,7 @@ export default function WhatIsMoney() {
   return (
     <>
       <Head>
-        <title>What is Money? | KidsFin</title>
+        <title>What is Money? | Cash Critters</title>
         <meta name="description" content="Learn about what money is and how it works" />
       </Head>
 

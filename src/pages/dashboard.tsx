@@ -7,7 +7,8 @@ import { Header } from "@/components/layout/Header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { BookOpen, Gamepad2, Piggy, Award, Star } from "lucide-react";
+import { BookOpen, Gamepad2, Award, Star, Coins } from "lucide-react";
+import { PiggyBank } from "lucide-react";
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
@@ -56,7 +57,7 @@ export default function Dashboard() {
             <Card className="mb-8">
               <CardHeader>
                 <CardTitle>Your Learning Journey</CardTitle>
-                <CardDescription>You've completed 30% of the beginner lessons</CardDescription>
+                <CardDescription>You&apos;ve completed 30% of the beginner lessons</CardDescription>
               </CardHeader>
               <CardContent>
                 <Progress value={progress} className="h-2 mb-2" />
@@ -78,7 +79,7 @@ export default function Dashboard() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="mb-4">Your next lesson: "What is Money?"</p>
+                  <p className="mb-4">Your next lesson: &quot;What is Money?&quot;</p>
                   <Button onClick={() => router.push("/learn")}>
                     Start Lesson
                   </Button>
@@ -103,7 +104,7 @@ export default function Dashboard() {
               <Card>
                 <CardHeader className="pb-2">
                   <CardTitle className="flex items-center gap-2">
-                    <Piggy className="h-5 w-5 text-accent" />
+                    <PiggyBank className="h-5 w-5 text-accent" />
                     <span>Savings Tracker</span>
                   </CardTitle>
                 </CardHeader>
@@ -123,14 +124,14 @@ export default function Dashboard() {
                   <Award className="h-5 w-5 text-primary" />
                   <span>Your Achievements</span>
                 </CardTitle>
-                <CardDescription>Badges and rewards you've earned</CardDescription>
+                <CardDescription>Badges and rewards you&apos;ve earned</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-4">
                   {[
                     { name: "First Login", icon: <Star className="h-8 w-8 text-yellow-500" />, unlocked: true },
                     { name: "Money Basics", icon: <Coins className="h-8 w-8 text-blue-500" />, unlocked: false },
-                    { name: "Saving Star", icon: <Piggy className="h-8 w-8 text-green-500" />, unlocked: false },
+                    { name: "Saving Star", icon: <PiggyBank className="h-8 w-8 text-green-500" />, unlocked: false },
                   ].map((achievement, index) => (
                     <div 
                       key={index} 

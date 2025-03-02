@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -99,23 +100,23 @@ export function AuthForm({ mode }: AuthFormProps) {
         <p className="text-sm text-muted-foreground">
           {mode === "signin" ? (
             <>
-              Don't have an account?{" "}
-              <a 
+              Don&apos;t have an account?{" "}
+              <Link 
                 href="/auth/signup" 
                 className="text-primary hover:underline"
               >
                 Sign up
-              </a>
+              </Link>
             </>
           ) : (
             <>
               Already have an account?{" "}
-              <a 
+              <Link 
                 href="/auth/signin" 
                 className="text-primary hover:underline"
               >
                 Sign in
-              </a>
+              </Link>
             </>
           )}
         </p>

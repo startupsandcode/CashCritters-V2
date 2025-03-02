@@ -10,7 +10,8 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Piggy, Plus, Target, Trash2, Trophy } from "lucide-react";
+import { Plus, Target, Trash2, Trophy } from "lucide-react";
+import { PiggyBank } from "lucide-react";
 
 interface SavingsGoal {
   id: string;
@@ -144,7 +145,7 @@ export default function Savings() {
               <Card className="bg-primary/10">
                 <CardHeader className="pb-2">
                   <CardTitle className="flex items-center gap-2">
-                    <Piggy className="h-5 w-5 text-primary" />
+                    <PiggyBank className="h-5 w-5 text-primary" />
                     <span>Total Savings</span>
                   </CardTitle>
                 </CardHeader>
@@ -307,7 +308,7 @@ export default function Savings() {
             ) : (
               <Card className="text-center p-8">
                 <div className="flex justify-center mb-4">
-                  <Piggy className="h-16 w-16 text-muted-foreground" />
+                  <PiggyBank className="h-16 w-16 text-muted-foreground" />
                 </div>
                 <CardTitle className="mb-2">No Savings Goals Yet</CardTitle>
                 <CardDescription className="mb-6">

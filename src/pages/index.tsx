@@ -3,7 +3,8 @@ import Head from "next/head";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/layout/Header";
-import { Piggy, Coins, Wallet, TrendingUp, BookOpen } from "lucide-react";
+import { Coins, Wallet, TrendingUp, BookOpen } from "lucide-react";
+import { PiggyBank } from "lucide-react";
 
 export default function Home() {
   return (
@@ -44,7 +45,7 @@ export default function Home() {
                 </div>
                 <div className="flex justify-center">
                   <div className="relative w-full max-w-md aspect-square bg-primary/10 rounded-full flex items-center justify-center">
-                    <Piggy className="w-32 h-32 text-primary" />
+                    <PiggyBank className="w-32 h-32 text-primary" />
                   </div>
                 </div>
               </div>

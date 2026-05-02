@@ -42,6 +42,7 @@ model Account {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
@@ -65,6 +66,7 @@ model SavingsGoal {
   userId        String
   name          String
   targetAmount  Decimal  @db.Decimal(10, 2)
+  // denormalized sum of contributions — always update via prisma.$transaction with SavingsContribution.create
   currentAmount Decimal  @default(0) @db.Decimal(10, 2)
   emoji         String?
   createdAt     DateTime @default(now())
@@ -77,6 +79,7 @@ model SavingsGoal {
 model SavingsContribution {
   id        String      @id @default(cuid())
   goalId    String
+  // must be positive — enforced at the application layer
   amount    Decimal     @db.Decimal(10, 2)
   note      String?
   createdAt DateTime    @default(now())
@@ -107,4 +110,7 @@ model GameScore {
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, gameId])
+  @@index([gameId, score])
 }

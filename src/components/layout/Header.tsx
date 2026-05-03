@@ -1,72 +1,58 @@
+"use client"
 
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { useAuth } from "@/contexts/AuthContext";
-import { Button } from "@/components/ui/button";
-import { LogOut, Menu } from "lucide-react";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useState } from "react";
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { useSession } from "next-auth/react"
+import { Button } from "@/components/ui/button"
+import { Menu } from "lucide-react"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { SignOutButton } from "@/components/auth/SignOutButton"
+import { useState } from "react"
+
+const navItems = [
+  { name: "Dashboard", href: "/dashboard" },
+  { name: "Learn", href: "/learn" },
+  { name: "Games", href: "/games" },
+  { name: "Savings", href: "/savings" },
+]
 
 export function Header() {
-  const { user, logout } = useAuth();
-  const router = useRouter();
-  const [open, setOpen] = useState(false);
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      router.push("/");
-    } catch (error) {
-      console.error("Failed to log out", error);
-    }
-  };
-
-  const navItems = [
-    { name: "Dashboard", href: "/dashboard" },
-    { name: "Learn", href: "/learn" },
-    { name: "Games", href: "/games" },
-    { name: "Savings", href: "/savings" },
-  ];
+  const { data: session } = useSession()
+  const pathname = usePathname()
+  const [open, setOpen] = useState(false)
 
   return (
     <header className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl font-bold text-primary">Cash Critters</span>
-          </Link>
-        </div>
-        
+        <Link href="/" className="flex items-center gap-2">
+          <span className="text-2xl font-bold text-primary">Cash Critters</span>
+        </Link>
+
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
-          {user && navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`text-sm font-medium transition-colors hover:text-primary ${
-                router.pathname === item.href
-                  ? "text-primary"
-                  : "text-muted-foreground"
-              }`}
-            >
-              {item.name}
-            </Link>
-          ))}
-        </nav>
-        
-        <div className="flex items-center gap-4">
-          {user ? (
-            <>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleLogout}
-                className="hidden md:flex"
+          {session &&
+            navItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  pathname === item.href
+                    ? "text-primary"
+                    : "text-muted-foreground"
+                }`}
               >
-                <LogOut className="h-5 w-5" />
-                <span className="sr-only">Log out</span>
-              </Button>
-              
+                {item.name}
+              </Link>
+            ))}
+        </nav>
+
+        <div className="flex items-center gap-4">
+          {session ? (
+            <>
+              <div className="hidden md:flex">
+                <SignOutButton />
+              </div>
+
               {/* Mobile Menu */}
               <Sheet open={open} onOpenChange={setOpen}>
                 <SheetTrigger asChild className="md:hidden">
@@ -87,30 +73,20 @@ export function Header() {
                         {item.name}
                       </Link>
                     ))}
-                    <Button
-                      variant="outline"
-                      className="mt-4"
-                      onClick={() => {
-                        handleLogout();
-                        setOpen(false);
-                      }}
-                    >
-                      <LogOut className="mr-2 h-4 w-4" />
-                      Log out
-                    </Button>
+                    <SignOutButton mobile />
                   </nav>
                 </SheetContent>
               </Sheet>
             </>
           ) : (
             <>
-              <Link href="/auth/signin" className="hidden md:block">
+              <Link href="/signin" className="hidden md:block">
                 <Button variant="ghost">Sign In</Button>
               </Link>
-              <Link href="/auth/signup">
+              <Link href="/signup">
                 <Button>Get Started</Button>
               </Link>
-              
+
               {/* Mobile Menu */}
               <Sheet open={open} onOpenChange={setOpen}>
                 <SheetTrigger asChild className="md:hidden">
@@ -122,14 +98,14 @@ export function Header() {
                 <SheetContent side="right" className="w-[240px] sm:w-[300px]">
                   <nav className="flex flex-col gap-4 mt-8">
                     <Link
-                      href="/auth/signin"
+                      href="/signin"
                       className="text-base font-medium transition-colors hover:text-primary"
                       onClick={() => setOpen(false)}
                     >
                       Sign In
                     </Link>
                     <Link
-                      href="/auth/signup"
+                      href="/signup"
                       className="text-base font-medium transition-colors hover:text-primary"
                       onClick={() => setOpen(false)}
                     >
@@ -143,5 +119,5 @@ export function Header() {
         </div>
       </div>
     </header>
-  );
+  )
 }

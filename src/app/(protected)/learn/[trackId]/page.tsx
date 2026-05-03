@@ -5,23 +5,23 @@ import { Header } from "@/components/layout/Header"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Card, CardContent } from "@/components/ui/card"
-import { getModule, isLessonUnlocked } from "@/content/lessons"
+import { getTrack, isLessonUnlocked } from "@/content/lessons"
 import { getLessonProgress } from "@/actions/learn"
 
-export default async function ModuleOverviewPage({
+export default async function TrackOverviewPage({
   params,
 }: {
-  params: { modId: string }
+  params: { trackId: string }
 }) {
-  const mod = getModule(params.modId)
-  if (!mod) notFound()
+  const track = getTrack(params.trackId)
+  if (!track) notFound()
 
   const completed = await getLessonProgress()
-  const completedCount = mod.lessons.filter((l) =>
-    completed.has(`${mod.id}:${l.id}`)
+  const completedCount = track.lessons.filter((l) =>
+    completed.has(`${track.id}:${l.id}`)
   ).length
   const progressPercent = Math.round(
-    (completedCount / mod.lessons.length) * 100
+    (completedCount / track.lessons.length) * 100
   )
 
   return (
@@ -34,24 +34,24 @@ export default async function ModuleOverviewPage({
             className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6"
           >
             <ArrowLeft className="h-4 w-4" />
-            Back to Learning Modules
+            Back to Learning Tracks
           </Link>
 
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-1">{mod.title}</h1>
-            <p className="text-muted-foreground mb-4">{mod.description}</p>
+            <h1 className="text-3xl font-bold mb-1">{track.title}</h1>
+            <p className="text-muted-foreground mb-4">{track.description}</p>
             <div className="flex items-center gap-3">
               <Progress value={progressPercent} className="flex-1 h-2" />
               <span className="text-sm text-muted-foreground whitespace-nowrap">
-                {completedCount} of {mod.lessons.length} complete
+                {completedCount} of {track.lessons.length} complete
               </span>
             </div>
           </div>
 
           <div className="flex flex-col gap-3">
-            {mod.lessons.map((lesson, index) => {
-              const isCompleted = completed.has(`${mod.id}:${lesson.id}`)
-              const unlocked = isLessonUnlocked(mod.id, lesson.id, completed)
+            {track.lessons.map((lesson, index) => {
+              const isCompleted = completed.has(`${track.id}:${lesson.id}`)
+              const unlocked = isLessonUnlocked(track.id, lesson.id, completed)
 
               return (
                 <Card key={lesson.id} className={!unlocked ? "opacity-50" : ""}>
@@ -72,7 +72,7 @@ export default async function ModuleOverviewPage({
                       <p className="font-medium">{lesson.title}</p>
                     </div>
                     {unlocked && (
-                      <Link href={`/learn/${mod.id}/${lesson.id}`}>
+                      <Link href={`/learn/${track.id}/${lesson.id}`}>
                         <Button size="sm" variant={isCompleted ? "outline" : "default"}>
                           {isCompleted ? "Review" : "Start"}
                         </Button>

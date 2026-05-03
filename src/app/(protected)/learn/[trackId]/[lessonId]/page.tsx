@@ -2,31 +2,31 @@ import { notFound, redirect } from "next/navigation"
 import Link from "next/link"
 import { CheckCircle2 } from "lucide-react"
 import { Header } from "@/components/layout/Header"
-import { getModule, getLesson, getNextLesson, isLessonUnlocked } from "@/content/lessons"
+import { getTrack, getLesson, getNextLesson, isLessonUnlocked } from "@/content/lessons"
 import { getLessonProgress } from "@/actions/learn"
 import { LessonClient } from "./LessonClient"
 
 export default async function LessonPage({
   params,
 }: {
-  params: { moduleId: string; lessonId: string }
+  params: { trackId: string; lessonId: string }
 }) {
-  const mod = getModule(params.moduleId)
-  if (!mod) notFound()
+  const track = getTrack(params.trackId)
+  if (!track) notFound()
 
-  const lesson = getLesson(params.moduleId, params.lessonId)
+  const lesson = getLesson(params.trackId, params.lessonId)
   if (!lesson) notFound()
 
   const completed = await getLessonProgress()
 
-  if (!isLessonUnlocked(params.moduleId, params.lessonId, completed)) {
-    redirect(`/learn/${params.moduleId}`)
+  if (!isLessonUnlocked(params.trackId, params.lessonId, completed)) {
+    redirect(`/learn/${params.trackId}`)
   }
 
   const isAlreadyCompleted = completed.has(
-    `${params.moduleId}:${params.lessonId}`
+    `${params.trackId}:${params.lessonId}`
   )
-  const nextLesson = getNextLesson(params.moduleId, params.lessonId)
+  const nextLesson = getNextLesson(params.trackId, params.lessonId)
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -40,10 +40,10 @@ export default async function LessonPage({
             </Link>
             <span>→</span>
             <Link
-              href={`/learn/${mod.id}`}
+              href={`/learn/${track.id}`}
               className="hover:text-foreground"
             >
-              {mod.title}
+              {track.title}
             </Link>
             <span>→</span>
             <span className="text-foreground">{lesson.title}</span>
@@ -62,7 +62,7 @@ export default async function LessonPage({
 
           <LessonClient
             lesson={lesson}
-            moduleId={params.moduleId}
+            trackId={params.trackId}
             nextLessonId={nextLesson?.id ?? null}
             isAlreadyCompleted={isAlreadyCompleted}
           />

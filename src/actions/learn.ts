@@ -4,7 +4,7 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 
 export async function completeLesson(
-  moduleId: string,
+  trackId: string,
   lessonId: string,
   score: number
 ): Promise<void> {
@@ -13,9 +13,9 @@ export async function completeLesson(
 
   await prisma.learningProgress.upsert({
     where: {
-      userId_moduleId_lessonId: {
+      userId_trackId_lessonId: {
         userId: session.user.id,
-        moduleId,
+        trackId,
         lessonId,
       },
     },
@@ -26,7 +26,7 @@ export async function completeLesson(
     },
     create: {
       userId: session.user.id,
-      moduleId,
+      trackId,
       lessonId,
       score,
       completed: true,
@@ -41,8 +41,8 @@ export async function getLessonProgress(): Promise<Set<string>> {
 
   const records = await prisma.learningProgress.findMany({
     where: { userId: session.user.id, completed: true },
-    select: { moduleId: true, lessonId: true },
+    select: { trackId: true, lessonId: true },
   })
 
-  return new Set(records.map((r) => `${r.moduleId}:${r.lessonId}`))
+  return new Set(records.map((r) => `${r.trackId}:${r.lessonId}`))
 }

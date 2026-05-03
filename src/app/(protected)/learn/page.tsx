@@ -9,10 +9,10 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { MODULES } from "@/content/lessons"
+import { TRACKS } from "@/content/lessons"
 import { getLessonProgress } from "@/actions/learn"
 
-const MODULE_ICONS: Record<string, React.ReactNode> = {
+const TRACK_ICONS: Record<string, React.ReactNode> = {
   "money-basics": <Coins className="h-8 w-8 text-primary" />,
   "saving-habits": <Wallet className="h-8 w-8 text-secondary" />,
   "smart-spending": <TrendingUp className="h-8 w-8 text-accent" />,
@@ -28,18 +28,18 @@ export default async function LearnPage() {
       <main className="flex-1 py-8">
         <div className="container">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-2">Learning Modules</h1>
+            <h1 className="text-3xl font-bold mb-2">Learning Tracks</h1>
             <p className="text-muted-foreground">
-              Choose a module to start learning
+              Choose a track to start learning
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {MODULES.map((module) => {
-              const completedCount = module.lessons.filter((l) =>
-                completed.has(`${module.id}:${l.id}`)
+            {TRACKS.map((track) => {
+              const completedCount = track.lessons.filter((l) =>
+                completed.has(`${track.id}:${l.id}`)
               ).length
-              const total = module.lessons.length
+              const total = track.lessons.length
               const allDone = completedCount === total
               const started = completedCount > 0
 
@@ -52,18 +52,18 @@ export default async function LearnPage() {
 
               return (
                 <Card
-                  key={module.id}
+                  key={track.id}
                   className="hover:shadow-md transition-shadow"
                 >
                   <CardHeader>
-                    <div className="mb-2">{MODULE_ICONS[module.id]}</div>
+                    <div className="mb-2">{TRACK_ICONS[track.id]}</div>
                     <CardTitle className="flex items-center justify-between">
-                      {module.title}
+                      {track.title}
                       {allDone && (
                         <CheckCircle2 className="h-5 w-5 text-primary" />
                       )}
                     </CardTitle>
-                    <CardDescription>{module.description}</CardDescription>
+                    <CardDescription>{track.description}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="flex items-center justify-between">
@@ -73,7 +73,7 @@ export default async function LearnPage() {
                           {completedCount}/{total} lessons
                         </span>
                       </div>
-                      <Link href={`/learn/${module.id}`}>
+                      <Link href={`/learn/${track.id}`}>
                         <Button size="sm" variant={buttonVariant}>
                           {buttonLabel}
                         </Button>

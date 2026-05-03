@@ -16,14 +16,14 @@ export interface Lesson {
   quiz: QuizQuestion[]  // exactly 5 questions
 }
 
-export interface Module {
+export interface Track {
   id: string            // URL slug, e.g. "money-basics"
   title: string
   description: string
   lessons: Lesson[]
 }
 
-export const MODULES: Module[] = [
+export const TRACKS: Track[] = [
   {
     id: "money-basics",
     title: "Money Basics",
@@ -44,33 +44,33 @@ export const MODULES: Module[] = [
   },
 ]
 
-export function getModule(moduleId: string): Module | undefined {
-  return MODULES.find((m) => m.id === moduleId)
+export function getTrack(trackId: string): Track | undefined {
+  return TRACKS.find((t) => t.id === trackId)
 }
 
-export function getLesson(moduleId: string, lessonId: string): Lesson | undefined {
-  return getModule(moduleId)?.lessons.find((l) => l.id === lessonId)
+export function getLesson(trackId: string, lessonId: string): Lesson | undefined {
+  return getTrack(trackId)?.lessons.find((l) => l.id === lessonId)
 }
 
-export function getNextLesson(moduleId: string, lessonId: string): Lesson | undefined {
-  const mod = getModule(moduleId)
-  if (!mod) return undefined
-  const index = mod.lessons.findIndex((l) => l.id === lessonId)
+export function getNextLesson(trackId: string, lessonId: string): Lesson | undefined {
+  const track = getTrack(trackId)
+  if (!track) return undefined
+  const index = track.lessons.findIndex((l) => l.id === lessonId)
   if (index === -1) return undefined
-  return mod.lessons[index + 1]
+  return track.lessons[index + 1]
 }
 
-// A lesson is unlocked if it's first in the module, or if the previous lesson is completed.
+// A lesson is unlocked if it's first in the track, or if the previous lesson is completed.
 export function isLessonUnlocked(
-  moduleId: string,
+  trackId: string,
   lessonId: string,
   completed: Set<string>
 ): boolean {
-  const mod = getModule(moduleId)
-  if (!mod) return false
-  const index = mod.lessons.findIndex((l) => l.id === lessonId)
+  const track = getTrack(trackId)
+  if (!track) return false
+  const index = track.lessons.findIndex((l) => l.id === lessonId)
   if (index === -1) return false
   if (index === 0) return true
-  const prev = mod.lessons[index - 1]
-  return completed.has(`${moduleId}:${prev.id}`)
+  const prev = track.lessons[index - 1]
+  return completed.has(`${trackId}:${prev.id}`)
 }

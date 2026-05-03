@@ -11,14 +11,14 @@ const PASSING_SCORE = 4
 
 interface LessonClientProps {
   lesson: Lesson
-  moduleId: string
+  trackId: string
   nextLessonId: string | null
   isAlreadyCompleted: boolean
 }
 
 export function LessonClient({
   lesson,
-  moduleId,
+  trackId,
   nextLessonId,
   isAlreadyCompleted,
 }: LessonClientProps) {
@@ -60,11 +60,11 @@ export function LessonClient({
 
   function handleComplete() {
     startTransition(async () => {
-      await completeLesson(moduleId, lesson.id, score)
+      await completeLesson(trackId, lesson.id, score)
       if (nextLessonId) {
-        router.push(`/learn/${moduleId}/${nextLessonId}`)
+        router.push(`/learn/${trackId}/${nextLessonId}`)
       } else {
-        router.push(`/learn/${moduleId}`)
+        router.push(`/learn/${trackId}`)
       }
     })
   }
@@ -170,7 +170,7 @@ export function LessonClient({
               <Button
                 variant="outline"
                 onClick={() =>
-                  router.push(`/learn/${moduleId}/${nextLessonId}`)
+                  router.push(`/learn/${trackId}/${nextLessonId}`)
                 }
               >
                 Next Lesson →
@@ -178,7 +178,7 @@ export function LessonClient({
             )}
             <Button
               variant="ghost"
-              onClick={() => router.push(`/learn/${moduleId}`)}
+              onClick={() => router.push(`/learn/${trackId}`)}
             >
               Back to Module
             </Button>

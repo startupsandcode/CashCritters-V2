@@ -1,5 +1,6 @@
 "use client"
 
+import { useTransition } from "react"
 import { useState } from "react"
 import Link from "next/link"
 import { loginUser, loginWithGoogle } from "@/actions/auth"
@@ -17,16 +18,23 @@ import { PiggyBank } from "lucide-react"
 
 export default function SignInPage() {
   const [error, setError] = useState<string | null>(null)
-  const [pending, setPending] = useState(false)
+  const [isPending, startTransition] = useTransition()
+  const [isGooglePending, startGoogleTransition] = useTransition()
 
-  async function handleSubmit(formData: FormData) {
-    setPending(true)
+  function handleSubmit(formData: FormData) {
     setError(null)
-    const result = await loginUser(formData)
-    if (result?.error) {
-      setError(result.error)
-      setPending(false)
-    }
+    startTransition(async () => {
+      const result = await loginUser(formData)
+      if (result?.error) {
+        setError(result.error)
+      }
+    })
+  }
+
+  function handleGoogleSignIn() {
+    startGoogleTransition(async () => {
+      await loginWithGoogle()
+    })
   }
 
   return (
@@ -47,6 +55,7 @@ export default function SignInPage() {
                 id="email"
                 name="email"
                 type="email"
+                autoComplete="email"
                 placeholder="you@example.com"
                 required
               />
@@ -57,13 +66,18 @@ export default function SignInPage() {
                 id="password"
                 name="password"
                 type="password"
-                placeholder="••••••••"
+                autoComplete="current-password"
+                placeholder="Enter password"
                 required
               />
             </div>
-            {error && <p className="text-sm text-destructive">{error}</p>}
-            <Button type="submit" className="w-full" disabled={pending}>
-              {pending ? "Signing in…" : "Sign In"}
+            {error && (
+              <p role="alert" className="text-sm text-destructive">
+                {error}
+              </p>
+            )}
+            <Button type="submit" className="w-full" disabled={isPending}>
+              {isPending ? "Signing in…" : "Sign In"}
             </Button>
           </form>
 
@@ -76,11 +90,15 @@ export default function SignInPage() {
             </div>
           </div>
 
-          <form action={loginWithGoogle}>
-            <Button type="submit" variant="outline" className="w-full">
-              Continue with Google
-            </Button>
-          </form>
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full"
+            disabled={isGooglePending}
+            onClick={handleGoogleSignIn}
+          >
+            {isGooglePending ? "Redirecting…" : "Continue with Google"}
+          </Button>
 
           <p className="text-center text-sm text-muted-foreground">
             Don&apos;t have an account?{" "}

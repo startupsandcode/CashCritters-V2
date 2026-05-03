@@ -433,7 +433,7 @@ export function SavingsRaceClient({ leaderboard, personalBest }: Props) {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-amber-400 text-amber-700 hover:bg-amber-50 py-8 flex flex-col h-auto"
+                  className="border-amber-400 bg-amber-50 text-amber-700 hover:bg-amber-500 hover:text-white hover:border-amber-500 py-8 flex flex-col h-auto"
                   onClick={() => handleDecision("spend")}
                 >
                   <span className="text-xl mb-1">{scenario.eventEmoji}</span>

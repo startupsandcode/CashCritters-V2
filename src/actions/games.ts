@@ -13,7 +13,11 @@ export interface LeaderboardEntry {
 
 export async function saveGameScore(gameId: string, score: number): Promise<void> {
   const session = await auth()
-  if (!session?.user?.id) return
+  if (!session?.user?.id) throw new Error("Unauthenticated")
+
+  const VALID_GAME_IDS = new Set(["savings-race"])
+  if (!VALID_GAME_IDS.has(gameId)) throw new Error("Invalid gameId")
+  if (!Number.isInteger(score) || score < -50000 || score > 20000) throw new Error("Invalid score")
 
   await prisma.gameScore.create({
     data: {
@@ -30,7 +34,9 @@ export async function getLeaderboard(
 ): Promise<{ topScores: LeaderboardEntry[]; personalBest: number | null }> {
   const session = await auth()
 
-  // Fetch all scores ordered by score desc, then earliest createdAt for ties
+  // We fetch all scores and deduplicate in JS rather than GROUP BY because Prisma
+  // doesn't support DISTINCT ON. Fine at current scale; revisit with prisma.$queryRaw
+  // if GameScore rows grow significantly.
   const allScores = await prisma.gameScore.findMany({
     where: { gameId },
     orderBy: [{ score: "desc" }, { createdAt: "asc" }],
@@ -59,8 +65,9 @@ export async function getLeaderboard(
       isCurrentUser: row.userId === session?.user?.id,
     }))
 
-  const userRecord = session?.user?.id
-    ? personalBests.find((r) => r.userId === session.user!.id)
+  const currentUserId = session?.user?.id ?? null
+  const userRecord = currentUserId
+    ? personalBests.find((r) => r.userId === currentUserId)
     : undefined
   const personalBest = userRecord?.score ?? null
 

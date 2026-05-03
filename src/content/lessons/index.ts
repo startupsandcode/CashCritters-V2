@@ -53,11 +53,11 @@ export function getLesson(moduleId: string, lessonId: string): Lesson | undefine
 }
 
 export function getNextLesson(moduleId: string, lessonId: string): Lesson | undefined {
-  const module = getModule(moduleId)
-  if (!module) return undefined
-  const index = module.lessons.findIndex((l) => l.id === lessonId)
+  const mod = getModule(moduleId)
+  if (!mod) return undefined
+  const index = mod.lessons.findIndex((l) => l.id === lessonId)
   if (index === -1) return undefined
-  return module.lessons[index + 1]
+  return mod.lessons[index + 1]
 }
 
 // A lesson is unlocked if it's first in the module, or if the previous lesson is completed.
@@ -66,11 +66,11 @@ export function isLessonUnlocked(
   lessonId: string,
   completed: Set<string>
 ): boolean {
-  const module = getModule(moduleId)
-  if (!module) return false
-  const index = module.lessons.findIndex((l) => l.id === lessonId)
+  const mod = getModule(moduleId)
+  if (!mod) return false
+  const index = mod.lessons.findIndex((l) => l.id === lessonId)
   if (index === -1) return false
   if (index === 0) return true
-  const prev = module.lessons[index - 1]
+  const prev = mod.lessons[index - 1]
   return completed.has(`${moduleId}:${prev.id}`)
 }

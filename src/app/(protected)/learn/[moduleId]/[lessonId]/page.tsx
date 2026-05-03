@@ -11,8 +11,8 @@ export default async function LessonPage({
 }: {
   params: { moduleId: string; lessonId: string }
 }) {
-  const module = getModule(params.moduleId)
-  if (!module) notFound()
+  const mod = getModule(params.moduleId)
+  if (!mod) notFound()
 
   const lesson = getLesson(params.moduleId, params.lessonId)
   if (!lesson) notFound()
@@ -40,10 +40,10 @@ export default async function LessonPage({
             </Link>
             <span>→</span>
             <Link
-              href={`/learn/${module.id}`}
+              href={`/learn/${mod.id}`}
               className="hover:text-foreground"
             >
-              {module.title}
+              {mod.title}
             </Link>
             <span>→</span>
             <span className="text-foreground">{lesson.title}</span>

@@ -11,17 +11,17 @@ import { getLessonProgress } from "@/actions/learn"
 export default async function ModuleOverviewPage({
   params,
 }: {
-  params: { moduleId: string }
+  params: { modId: string }
 }) {
-  const module = getModule(params.moduleId)
-  if (!module) notFound()
+  const mod = getModule(params.modId)
+  if (!mod) notFound()
 
   const completed = await getLessonProgress()
-  const completedCount = module.lessons.filter((l) =>
-    completed.has(`${module.id}:${l.id}`)
+  const completedCount = mod.lessons.filter((l) =>
+    completed.has(`${mod.id}:${l.id}`)
   ).length
   const progressPercent = Math.round(
-    (completedCount / module.lessons.length) * 100
+    (completedCount / mod.lessons.length) * 100
   )
 
   return (
@@ -38,20 +38,20 @@ export default async function ModuleOverviewPage({
           </Link>
 
           <div className="mb-8">
-            <h1 className="text-3xl font-bold mb-1">{module.title}</h1>
-            <p className="text-muted-foreground mb-4">{module.description}</p>
+            <h1 className="text-3xl font-bold mb-1">{mod.title}</h1>
+            <p className="text-muted-foreground mb-4">{mod.description}</p>
             <div className="flex items-center gap-3">
               <Progress value={progressPercent} className="flex-1 h-2" />
               <span className="text-sm text-muted-foreground whitespace-nowrap">
-                {completedCount} of {module.lessons.length} complete
+                {completedCount} of {mod.lessons.length} complete
               </span>
             </div>
           </div>
 
           <div className="flex flex-col gap-3">
-            {module.lessons.map((lesson, index) => {
-              const isCompleted = completed.has(`${module.id}:${lesson.id}`)
-              const unlocked = isLessonUnlocked(module.id, lesson.id, completed)
+            {mod.lessons.map((lesson, index) => {
+              const isCompleted = completed.has(`${mod.id}:${lesson.id}`)
+              const unlocked = isLessonUnlocked(mod.id, lesson.id, completed)
 
               return (
                 <Card key={lesson.id} className={!unlocked ? "opacity-50" : ""}>
@@ -72,7 +72,7 @@ export default async function ModuleOverviewPage({
                       <p className="font-medium">{lesson.title}</p>
                     </div>
                     {unlocked && (
-                      <Link href={`/learn/${module.id}/${lesson.id}`}>
+                      <Link href={`/learn/${mod.id}/${lesson.id}`}>
                         <Button size="sm" variant={isCompleted ? "outline" : "default"}>
                           {isCompleted ? "Review" : "Start"}
                         </Button>

@@ -238,7 +238,17 @@ src/app/(protected)/learn/page.tsx add progress badges, update button labels
 
 ---
 
-## 10. Out of Scope
+## 10. Extensibility
+
+Adding a new module (e.g., Investing, Credit Cards, Loans) requires only:
+1. A new content file: `src/content/lessons/[module-slug].ts`
+2. Adding the module entry to the `MODULES` array in `src/content/lessons/index.ts`
+
+No route changes, schema changes, or server action changes needed. The dynamic routes and DB schema are module-agnostic by design.
+
+---
+
+## 11. Out of Scope
 
 - Achievements / badge unlocks based on lesson completion (deferred)
 - Dashboard progress bar wired to real data (deferred — update after lessons ship)

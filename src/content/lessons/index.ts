@@ -60,6 +60,15 @@ export function getNextLesson(trackId: string, lessonId: string): Lesson | undef
   return track.lessons[index + 1]
 }
 
+// A track is unlocked if it's first, or if every lesson in the previous track is completed.
+export function isTrackUnlocked(trackId: string, completed: Set<string>): boolean {
+  const index = TRACKS.findIndex((t) => t.id === trackId)
+  if (index === -1) return false
+  if (index === 0) return true
+  const prev = TRACKS[index - 1]
+  return prev.lessons.every((l) => completed.has(`${prev.id}:${l.id}`))
+}
+
 // A lesson is unlocked if it's first in the track, or if the previous lesson is completed.
 export function isLessonUnlocked(
   trackId: string,

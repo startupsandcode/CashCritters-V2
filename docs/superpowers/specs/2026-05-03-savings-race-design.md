@@ -17,9 +17,9 @@
 
 ## 2. Game Overview
 
-**Savings Race** is a 10-round, ~60-second financial decision game. Each round the player earns income from a fun source and is immediately presented with a spending event. They must actively tap **Save it** to keep their money — if they hesitate or tap **Spend it**, the purchase happens and only the remainder is saved.
+**Savings Race** is a 10-round, ~60-second financial decision game. Most rounds the player earns income and is presented with a spending event. Some rounds have no income — only a spending opportunity — forcing the player to decide whether to dip into their savings or protect it.
 
-The pedagogical intent is deliberate: saving requires conscious effort. Spending is the path of least resistance.
+The pedagogical intent is deliberate: saving requires conscious effort, and protecting existing savings is just as important as earning more.
 
 ---
 
@@ -27,15 +27,26 @@ The pedagogical intent is deliberate: saving requires conscious effort. Spending
 
 ### Round Structure
 
-Each of the 10 rounds proceeds as follows:
+Each of the 10 rounds is one of two types:
 
+**Income round** (approximately 7 out of 10):
 1. **Income announcement** — "You earned $15 walking the neighbor's dog 🐕"
 2. **Spending event** — "Your friends are going to the movies! Tickets cost $10."
 3. **Decision window** — 6-second countdown bar drains toward a spend
 4. **Resolution:**
    - Tap **Save it** → full income added to savings
-   - Tap **Spend it** (or timer expires) → event cost subtracted, remainder saved
-5. **Result flash** — brief feedback ("You saved $15! 💪" or "You spent $10, saved $5"), then next round
+   - Tap **Spend it** (or timer expires) → event cost subtracted from income, remainder saved
+5. **Result flash** — "You saved $15! 💪" or "You spent $10, saved $5"
+
+**No-income round** (approximately 3 out of 10):
+1. **Spending event only** — "There's a carnival in town! Ride tickets cost $8. 🎡"
+2. **Decision window** — 6-second countdown bar drains toward a spend
+3. **Resolution:**
+   - Tap **Skip it** → savings unchanged
+   - Tap **Spend it** (or timer expires) → event cost subtracted from savings balance
+4. **Result flash** — "You protected your savings! 💪" or "You spent $8 from savings"
+
+The mix of ~7 income rounds and ~3 no-income rounds per game is determined by the randomly sampled scenario pool — the `GameScenario` type encodes whether a scenario has income.
 
 ### Timer
 
@@ -84,28 +95,32 @@ src/content/games/
 ```typescript
 export interface GameScenario {
   id: string
-  incomeSource: string      // e.g. "walked the neighbor's dog"
-  incomeAmount: number      // dollars, e.g. 15
-  incomeEmoji: string       // e.g. "🐕"
-  eventDescription: string  // e.g. "Your friends are going to the movies!"
-  eventCost: number         // dollars, e.g. 10
-  eventEmoji: string        // e.g. "🎬"
+  // Income fields — null for no-income rounds
+  incomeSource: string | null   // e.g. "walked the neighbor's dog" | null
+  incomeAmount: number | null   // dollars, e.g. 15 | null
+  incomeEmoji: string | null    // e.g. "🐕" | null
+  // Spending event — always present
+  eventDescription: string      // e.g. "Your friends are going to the movies!"
+  eventCost: number             // dollars, e.g. 10
+  eventEmoji: string            // e.g. "🎬"
 }
 
 export const SCENARIOS: GameScenario[]
 ```
 
+**Helper:** `isIncomeRound(scenario: GameScenario): boolean` — returns `scenario.incomeAmount !== null`. Used by the client to determine button labels ("Save it" / "Spend it" vs "Skip it" / "Spend it") and resolution logic.
+
 ### Scenario Design Rules
 
-- **Income range:** $5–$25 per round
-- **Event cost range:** $3–$18 (always less than the income, so the player always saves something even if they spend)
-- **50 minimum scenarios** — 10 are randomly sampled without replacement each game for replayability
+- **50+ income scenarios** — income range $5–$25, event cost $3–$18. Event cost always less than income so the player always saves something if they spend.
+- **15+ no-income scenarios** — event cost $3–$15. Cost must never exceed $20 (prevents wiping out a player who has saved well).
+- **10 sampled per game** — drawn randomly without replacement, with a soft constraint of ~3 no-income rounds per game (ensured by sampling from each pool separately: 7 from income scenarios, 3 from no-income scenarios).
 - Income sources: chores, pet-sitting, birthday money, selling crafts, lemonade stand, helping a neighbor, recycling cans, etc.
 - Spending events: movies, snacks, video games, school bake sale, fair/carnival, app purchase, trading cards, etc.
 
 ### Maximum Possible Score
 
-Because income and costs are fixed per scenario, the theoretical maximum score per game is deterministic (sum of all 10 sampled income amounts). This is shown on the results screen as context ("You saved $X out of a possible $Y").
+The theoretical maximum is the sum of income from the 7 sampled income rounds (no-income rounds contribute $0 to the max since the best outcome is spending nothing). Shown on the results screen as "You saved $X out of a possible $Y".
 
 ---
 
@@ -167,9 +182,10 @@ interface GameState {
 
 interface RoundOutcome {
   scenarioId: string
-  saved: boolean           // true = chose Save it
-  amountSaved: number      // cents
-  amountSpent: number      // cents
+  isIncomeRound: boolean   // true = had income, false = no-income round
+  protected: boolean       // true = chose Save it / Skip it
+  amountSaved: number      // cents added to savings this round (0 if spent all income, or negative if dipped into savings)
+  amountSpent: number      // cents spent this round
 }
 ```
 

@@ -40,6 +40,7 @@ const INITIAL_STATE: GameState = {
 
 const ROUND_DURATION_MS = 6000
 const RESULT_FLASH_MS = 1500
+const URGENT_THRESHOLD_MS = 2000
 
 function formatDollars(cents: number): string {
   const abs = Math.abs(cents)
@@ -75,13 +76,13 @@ export function SavingsRaceClient({ leaderboard, personalBest }: Props) {
     .reduce((sum, s) => sum + (s.incomeAmount ?? 0) * 100, 0)
 
   // --- Decision handler (useRef lock prevents double-firing) ---
-  const handleDecision = useCallback(
-    (choice: "save" | "spend") => {
-      if (hasDecidedRef.current) return
-      hasDecidedRef.current = true
+  const handleDecision = useCallback((choice: "save" | "spend") => {
+    if (hasDecidedRef.current) return
+    hasDecidedRef.current = true
 
-      const scenario = state.scenarios[state.round - 1]
-      if (!scenario) return
+    setState((prev) => {
+      const scenario = prev.scenarios[prev.round - 1]
+      if (!scenario) return prev
       const isIncome = isIncomeRound(scenario)
 
       let amountSavedCents: number
@@ -107,7 +108,7 @@ export function SavingsRaceClient({ leaderboard, personalBest }: Props) {
           amountSpentCents = 0
           isProtected = true
         } else {
-          amountSavedCents = -cost   // dipping into savings
+          amountSavedCents = -cost
           amountSpentCents = cost
           isProtected = false
         }
@@ -121,16 +122,15 @@ export function SavingsRaceClient({ leaderboard, personalBest }: Props) {
         amountSpentCents,
       }
 
-      setState((prev) => ({
+      return {
         ...prev,
         savings: prev.savings + amountSavedCents,
         roundOutcomes: [...prev.roundOutcomes, outcome],
-        roundPhase: "resolved",
+        roundPhase: "resolved" as const,
         lastOutcome: outcome,
-      }))
-    },
-    [state.scenarios, state.round]
-  )
+      }
+    })
+  }, []) // stable — no external deps needed
 
   // --- Advance to next round ---
   const nextRound = useCallback(() => {
@@ -148,12 +148,19 @@ export function SavingsRaceClient({ leaderboard, personalBest }: Props) {
   const finishGame = useCallback(
     (finalSavings: number) => {
       setState((prev) => ({ ...prev, phase: "result" }))
-      saveGameScore("savings-race", finalSavings).then(() => {
-        router.refresh()
-      })
+      saveGameScore("savings-race", finalSavings)
+        .then(() => router.refresh())
+        .catch(console.error)
     },
     [router]
   )
+
+  // --- Reset to intro screen ---
+  const resetToIntro = useCallback(() => {
+    hasDecidedRef.current = false
+    setRoundTimeLeft(ROUND_DURATION_MS)
+    setState(INITIAL_STATE)
+  }, [])
 
   // --- Start / restart game ---
   const startGame = useCallback(() => {
@@ -294,7 +301,7 @@ export function SavingsRaceClient({ leaderboard, personalBest }: Props) {
     if (!scenario) return null
     const isIncome = isIncomeRound(scenario)
     const timerPct = (roundTimeLeft / ROUND_DURATION_MS) * 100
-    const isUrgent = roundTimeLeft <= 2000
+    const isUrgent = roundTimeLeft <= URGENT_THRESHOLD_MS
 
     return (
       <div className="flex flex-col min-h-screen">
@@ -539,7 +546,7 @@ export function SavingsRaceClient({ leaderboard, personalBest }: Props) {
               size="lg"
               variant="outline"
               className="w-full"
-              onClick={() => setState(INITIAL_STATE)}
+              onClick={resetToIntro}
             >
               Back to Intro
             </Button>

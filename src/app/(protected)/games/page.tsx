@@ -30,7 +30,7 @@ const games = [
   {
     id: "savings-race",
     title: "Savings Race",
-    description: "Race to reach your savings goal first",
+    description: "Make smart save-or-spend decisions in 10 fast rounds",
     icon: <PiggyBank className="h-8 w-8 text-accent" />,
     difficulty: "Easy",
     route: "/games/savings-race",

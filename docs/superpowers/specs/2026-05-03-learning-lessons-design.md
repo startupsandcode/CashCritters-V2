@@ -248,10 +248,11 @@ No route changes, schema changes, or server action changes needed. The dynamic r
 
 ---
 
-## 11. Out of Scope
+## 11. Out of Scope (Planned Future Work)
 
-- Achievements / badge unlocks based on lesson completion (deferred)
-- Dashboard progress bar wired to real data (deferred — update after lessons ship)
-- Streak tracking or daily goals
-- Lesson content editing UI / CMS
-- Games feature (separate spec)
+- **Streak tracking** — daily login/lesson streaks with visual indicators
+- **Badges / achievements** — unlocks for completing modules, perfect scores, streaks
+- **Dashboard progress bar** — wire to real lesson completion data after lessons ship
+- **Additional modules** — Investing, Credit Cards, Loans, Options (see Section 10)
+- **Lesson content editing UI / CMS** — for non-developer content updates
+- **Games feature** — separate spec

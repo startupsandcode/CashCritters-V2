@@ -7,10 +7,12 @@ import bcrypt from "bcryptjs"
 import { redirect } from "next/navigation"
 
 export async function loginUser(formData: FormData) {
+  const email = (formData.get("email") as string)?.trim().toLowerCase()
+  const password = formData.get("password") as string
   try {
     await signIn("credentials", {
-      email: formData.get("email") as string,
-      password: formData.get("password") as string,
+      email,
+      password,
       redirectTo: "/dashboard",
     })
   } catch (error) {
@@ -26,9 +28,13 @@ export async function loginWithGoogle() {
 }
 
 export async function registerUser(formData: FormData) {
-  const name = formData.get("name") as string
-  const email = formData.get("email") as string
+  const name = (formData.get("name") as string)?.trim()
+  const email = (formData.get("email") as string)?.trim().toLowerCase()
   const password = formData.get("password") as string
+
+  if (!name || !email?.includes("@") || !password || password.length < 8) {
+    return { error: "Invalid registration data" }
+  }
 
   const existing = await prisma.user.findUnique({ where: { email } })
   if (existing) {

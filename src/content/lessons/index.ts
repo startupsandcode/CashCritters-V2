@@ -56,6 +56,7 @@ export function getNextLesson(moduleId: string, lessonId: string): Lesson | unde
   const module = getModule(moduleId)
   if (!module) return undefined
   const index = module.lessons.findIndex((l) => l.id === lessonId)
+  if (index === -1) return undefined
   return module.lessons[index + 1]
 }
 
@@ -68,6 +69,7 @@ export function isLessonUnlocked(
   const module = getModule(moduleId)
   if (!module) return false
   const index = module.lessons.findIndex((l) => l.id === lessonId)
+  if (index === -1) return false
   if (index === 0) return true
   const prev = module.lessons[index - 1]
   return completed.has(`${moduleId}:${prev.id}`)

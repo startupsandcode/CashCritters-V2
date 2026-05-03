@@ -1,11 +1,11 @@
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import Link from "next/link"
 import { CheckCircle2, Lock, Circle, ArrowLeft } from "lucide-react"
 import { Header } from "@/components/layout/Header"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Card, CardContent } from "@/components/ui/card"
-import { getTrack, isLessonUnlocked } from "@/content/lessons"
+import { getTrack, isTrackUnlocked, isLessonUnlocked } from "@/content/lessons"
 import { getLessonProgress } from "@/actions/learn"
 
 export default async function TrackOverviewPage({
@@ -17,6 +17,11 @@ export default async function TrackOverviewPage({
   if (!track) notFound()
 
   const completed = await getLessonProgress()
+
+  if (!isTrackUnlocked(params.trackId, completed)) {
+    redirect("/learn")
+  }
+
   const completedCount = track.lessons.filter((l) =>
     completed.has(`${track.id}:${l.id}`)
   ).length

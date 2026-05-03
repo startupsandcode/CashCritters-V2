@@ -13,9 +13,9 @@ export interface GameScenario {
 export interface RoundOutcome {
   scenarioId: string
   isIncomeRound: boolean
-  protected: boolean      // true = chose Save it / Skip it
-  amountSaved: number     // cents; negative if dipped into savings
-  amountSpent: number     // cents
+  protected: boolean          // true = chose Save it / Skip it
+  amountSavedCents: number    // negative if dipped into savings
+  amountSpentCents: number
 }
 
 export function isIncomeRound(scenario: GameScenario): boolean {
@@ -95,7 +95,7 @@ const NO_INCOME_SCENARIOS: GameScenario[] = [
   { id: "n13", incomeSource: null, incomeAmount: null, incomeEmoji: null, eventDescription: "There's a movie everyone's talking about — $5 to rent online.", eventCost: 5, eventEmoji: "🎥" },
   { id: "n14", incomeSource: null, incomeAmount: null, incomeEmoji: null, eventDescription: "Art supplies are on sale — the set you've wanted is $11.", eventCost: 11, eventEmoji: "🎨" },
   { id: "n15", incomeSource: null, incomeAmount: null, incomeEmoji: null, eventDescription: "A food truck with your absolute favorite meal just parked outside!", eventCost: 8, eventEmoji: "🚚" },
-  { id: "n16", incomeSource: null, incomeAmount: null, incomeEmoji: null, eventDescription: "The stationary store has an epic holographic sticker pack!", eventCost: 5, eventEmoji: "✨" },
+  { id: "n16", incomeSource: null, incomeAmount: null, incomeEmoji: null, eventDescription: "The stationery store has an epic holographic sticker pack!", eventCost: 5, eventEmoji: "✨" },
 ]
 
 export const SCENARIOS: GameScenario[] = [...INCOME_SCENARIOS, ...NO_INCOME_SCENARIOS]

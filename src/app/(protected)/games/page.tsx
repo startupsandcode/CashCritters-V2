@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Gamepad2, Coins, ShoppingCart, PiggyBank } from "lucide-react"
+import Link from "next/link"
 
 const games = [
   {
@@ -16,6 +17,7 @@ const games = [
     description: "Practice counting coins and making change",
     icon: <Coins className="h-8 w-8 text-primary" />,
     difficulty: "Easy",
+    route: null,
   },
   {
     id: "budget-challenge",
@@ -23,6 +25,7 @@ const games = [
     description: "Manage a weekly budget and make smart choices",
     icon: <ShoppingCart className="h-8 w-8 text-secondary" />,
     difficulty: "Medium",
+    route: null,
   },
   {
     id: "savings-race",
@@ -30,6 +33,7 @@ const games = [
     description: "Race to reach your savings goal first",
     icon: <PiggyBank className="h-8 w-8 text-accent" />,
     difficulty: "Easy",
+    route: "/games/savings-race",
   },
 ]
 
@@ -52,7 +56,12 @@ export default function GamesPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {games.map((game) => (
-              <Card key={game.id} className="hover:shadow-md transition-shadow">
+              <Card
+                key={game.id}
+                className={`transition-shadow ${
+                  game.route ? "hover:shadow-md" : "opacity-60"
+                }`}
+              >
                 <CardHeader>
                   <div className="mb-2">{game.icon}</div>
                   <CardTitle>{game.title}</CardTitle>
@@ -63,7 +72,15 @@ export default function GamesPage() {
                     <span className="text-sm text-muted-foreground">
                       {game.difficulty}
                     </span>
-                    <Button size="sm">Play</Button>
+                    {game.route ? (
+                      <Button size="sm" asChild>
+                        <Link href={game.route}>Play</Link>
+                      </Button>
+                    ) : (
+                      <Button size="sm" disabled>
+                        Coming Soon
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>

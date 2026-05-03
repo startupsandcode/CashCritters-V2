@@ -91,6 +91,7 @@ model LearningProgress {
   id          String    @id @default(cuid())
   userId      String
   moduleId    String
+  lessonId    String
   completed   Boolean   @default(false)
   score       Int?
   completedAt DateTime?
@@ -99,7 +100,7 @@ model LearningProgress {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, moduleId])
+  @@unique([userId, moduleId, lessonId])
 }
 
 model GameScore {

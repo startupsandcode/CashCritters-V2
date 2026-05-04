@@ -127,9 +127,8 @@ export default function Home() {
             </div>
             <div className="flex gap-8">
               <Link href="#" className="text-muted-foreground hover:text-foreground">About</Link>
-              <Link href="#" className="text-muted-foreground hover:text-foreground">Privacy</Link>
+              <Link href="/privacy" className="text-muted-foreground hover:text-foreground">Privacy</Link>
               <Link href="#" className="text-muted-foreground hover:text-foreground">Terms</Link>
-              <Link href="#" className="text-muted-foreground hover:text-foreground">Contact</Link>
             </div>
           </div>
           <div className="mt-8 pt-8 border-t text-center text-muted-foreground">

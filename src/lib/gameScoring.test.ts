@@ -35,9 +35,22 @@ test("coin-counter rejects scores outside 0..10", () => {
   assert.strictEqual(isValidScore("coin-counter", 11), false)
 })
 
+test("budget-challenge accepts integer scores -10000..5000", () => {
+  assert.strictEqual(isValidScore("budget-challenge", -10000), true)
+  assert.strictEqual(isValidScore("budget-challenge", 5000), true)
+  assert.strictEqual(isValidScore("budget-challenge", -1200), true)
+  assert.strictEqual(isValidScore("budget-challenge", 0), true)
+})
+
+test("budget-challenge rejects scores outside -10000..5000", () => {
+  assert.strictEqual(isValidScore("budget-challenge", -10001), false)
+  assert.strictEqual(isValidScore("budget-challenge", 5001), false)
+})
+
 test("rejects non-integer scores", () => {
   assert.strictEqual(isValidScore("coin-counter", 5.5), false)
   assert.strictEqual(isValidScore("savings-race", 100.1), false)
+  assert.strictEqual(isValidScore("budget-challenge", -50.5), false)
 })
 
 test("rejects unknown gameId", () => {

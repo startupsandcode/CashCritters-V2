@@ -132,6 +132,7 @@ export function SavingsClient({ goals }: Props) {
   const [contributeError, setContributeError] = useState<string | null>(null)
 
   const [deleteGoalId, setDeleteGoalId] = useState<string | null>(null)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
   const [isPending, setIsPending] = useState(false)
 
@@ -182,11 +183,14 @@ export function SavingsClient({ goals }: Props) {
 
   async function handleDelete() {
     if (!deleteGoalId) return
+    setDeleteError(null)
     setIsPending(true)
     try {
       await deleteSavingsGoal(deleteGoalId)
       setDeleteGoalId(null)
       router.refresh()
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : "Something went wrong")
     } finally {
       setIsPending(false)
     }
@@ -357,7 +361,10 @@ export function SavingsClient({ goals }: Props) {
       <AlertDialog
         open={deleteGoalId !== null}
         onOpenChange={(open) => {
-          if (!open) setDeleteGoalId(null)
+          if (!open) {
+            setDeleteGoalId(null)
+            setDeleteError(null)
+          }
         }}
       >
         <AlertDialogContent>
@@ -372,6 +379,11 @@ export function SavingsClient({ goals }: Props) {
               be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
+          {deleteError && (
+            <p role="alert" className="text-sm text-destructive">
+              {deleteError}
+            </p>
+          )}
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete} disabled={isPending}>

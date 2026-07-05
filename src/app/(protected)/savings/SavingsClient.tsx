@@ -386,7 +386,13 @@ export function SavingsClient({ goals }: Props) {
           )}
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isPending}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} disabled={isPending}>
+            <AlertDialogAction
+              onClick={(e) => {
+                e.preventDefault()
+                handleDelete()
+              }}
+              disabled={isPending}
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

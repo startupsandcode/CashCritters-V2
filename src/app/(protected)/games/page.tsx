@@ -25,7 +25,7 @@ const games = [
     description: "Manage a weekly budget and make smart choices",
     icon: <ShoppingCart className="h-8 w-8 text-secondary" />,
     difficulty: "Medium",
-    route: null,
+    route: "/games/budget-challenge",
   },
   {
     id: "savings-race",

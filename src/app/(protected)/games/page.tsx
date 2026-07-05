@@ -17,7 +17,7 @@ const games = [
     description: "Practice counting coins and making change",
     icon: <Coins className="h-8 w-8 text-primary" />,
     difficulty: "Easy",
-    route: null,
+    route: "/games/coin-counter",
   },
   {
     id: "budget-challenge",

@@ -229,7 +229,7 @@ export function BudgetChallengeClient({ leaderboard, personalBest }: Props) {
               <h1 className="text-3xl font-bold mb-2">Budget Challenge</h1>
               <p className="text-muted-foreground">
                 Split a $50 allowance across Food, Fun, and Savings, then
-                watch your week play out. You'll get one chance to
+                watch your week play out. You&apos;ll get one chance to
                 re-plan halfway through!
               </p>
             </div>
@@ -250,7 +250,7 @@ export function BudgetChallengeClient({ leaderboard, personalBest }: Props) {
                 </p>
                 <p>
                   🔄 <strong>Re-plan at the midpoint</strong> based on how
-                  the week's gone, then days 4-7 play out the same way.
+                  the week&apos;s gone, then days 4-7 play out the same way.
                 </p>
                 <p>
                   🏆 <strong>Your score is your final Savings</strong> —
@@ -403,7 +403,7 @@ export function BudgetChallengeClient({ leaderboard, personalBest }: Props) {
             <div className="text-center mb-6">
               <h1 className="text-2xl font-bold mb-1">Halfway There!</h1>
               <p className="text-muted-foreground text-sm">
-                Re-plan the rest of your week with what's left:{" "}
+                Re-plan the rest of your week with what&apos;s left:{" "}
                 {formatDollars(currentTotal)}.
               </p>
             </div>
@@ -456,7 +456,7 @@ export function BudgetChallengeClient({ leaderboard, personalBest }: Props) {
               {formatDollars(state.balances.savings)}
             </div>
             <p className="text-muted-foreground">
-              That's your final savings for the week.
+              That&apos;s your final savings for the week.
             </p>
           </div>
 

@@ -2,6 +2,7 @@
 
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
+import { isValidScore } from "@/lib/gameScoring"
 
 export interface LeaderboardEntry {
   rank: number
@@ -15,9 +16,7 @@ export async function saveGameScore(gameId: string, score: number): Promise<void
   const session = await auth()
   if (!session?.user?.id) throw new Error("Unauthenticated")
 
-  const VALID_GAME_IDS = new Set(["savings-race"])
-  if (!VALID_GAME_IDS.has(gameId)) throw new Error("Invalid gameId")
-  if (!Number.isInteger(score) || score < -50000 || score > 20000) throw new Error("Invalid score")
+  if (!isValidScore(gameId, score)) throw new Error("Invalid gameId or score")
 
   await prisma.gameScore.create({
     data: {

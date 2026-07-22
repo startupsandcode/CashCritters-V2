@@ -22,15 +22,12 @@
 
 # local env files
 .env*.local
-*.pem
 
 # debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-# local env files
-.env*.local
+/logs
 
 # vercel
 .vercel
@@ -45,3 +42,9 @@ firebase-service-account.json
 # worktrees
 .worktrees
 .superpowers
+
+# claude
+.claude/settings.local.json
+
+# internal planning docs
+docs/superpowers

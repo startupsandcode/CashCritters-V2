@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -iE 'secret|credential|\\\\.pem$|\\\\.key$|service-account')"
+    ]
+  }
+}

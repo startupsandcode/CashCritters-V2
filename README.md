@@ -15,7 +15,7 @@ A financial literacy app for kids, built with Next.js, Prisma, and Postgres. It 
 
 ## Tech stack
 
-- [Next.js 15](https://nextjs.org/) (App Router)
+- [Next.js 16](https://nextjs.org/) (App Router)
 - [Prisma](https://www.prisma.io/) + Postgres
 - [Auth.js](https://authjs.dev/) (NextAuth v5)
 - [Tailwind CSS](https://tailwindcss.com/) + [shadcn/ui](https://ui.shadcn.com/) (Radix primitives)

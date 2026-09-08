@@ -2,11 +2,11 @@
 "use client"
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Header } from "@/components/layout/Header"
-import { saveGameScore } from "@/actions/games"
+import { GameModePicker, type GameMode } from "@/components/games/GameModePicker"
+import { ScoreSaveStatus } from "@/components/games/ScoreSaveStatus"
 import type { LeaderboardEntry } from "@/actions/games"
 import {
   generateRound,
@@ -103,10 +103,14 @@ function CoinPileDisplay({ coins }: { coins: CoinDenomination[] }) {
 interface Props {
   leaderboard: LeaderboardEntry[]
   personalBest: number | null
+  practice: { topScores: LeaderboardEntry[]; personalBest: number | null }
 }
 
-export function CoinCounterClient({ leaderboard, personalBest }: Props) {
-  const router = useRouter()
+export function CoinCounterClient({ leaderboard: timedLeaderboard, personalBest: timedBest, practice }: Props) {
+  const [mode, setMode] = useState<GameMode>("timed")
+  const leaderboard = mode === "practice" ? practice.topScores : timedLeaderboard
+  const personalBest = mode === "practice" ? practice.personalBest : timedBest
+  const [runId, setRunId] = useState("")
   const [state, setState] = useState<GameState>(INITIAL_STATE)
   const [roundTimeLeft, setRoundTimeLeft] = useState(ROUND_DURATION_MS)
   const hasAnsweredRef = useRef(false)
@@ -164,15 +168,9 @@ export function CoinCounterClient({ leaderboard, personalBest }: Props) {
   }, [])
 
   // --- Finish game — save score, refresh leaderboard, show result ---
-  const finishGame = useCallback(
-    (finalScore: number) => {
-      setState((prev) => ({ ...prev, phase: "result" }))
-      saveGameScore("coin-counter", finalScore)
-        .then(() => router.refresh())
-        .catch(console.error)
-    },
-    [router]
-  )
+  const finishGame = useCallback(() => {
+    setState((prev) => ({ ...prev, phase: "result" }))
+  }, [])
 
   // --- Reset to intro screen ---
   const resetToIntro = useCallback(() => {
@@ -183,6 +181,7 @@ export function CoinCounterClient({ leaderboard, personalBest }: Props) {
 
   // --- Start / restart game ---
   const startGame = useCallback(() => {
+    setRunId(crypto.randomUUID())
     hasAnsweredRef.current = false
     setRoundTimeLeft(ROUND_DURATION_MS)
     const { pile, choices } = generateRound(1)
@@ -201,32 +200,34 @@ export function CoinCounterClient({ leaderboard, personalBest }: Props) {
 
   // Effect 1: per-round countdown tick (100ms intervals)
   useEffect(() => {
+    if (mode === "practice") return
     if (state.phase !== "playing" || state.roundPhase !== "deciding") return
     if (roundTimeLeft <= 0) return
     const id = setTimeout(() => setRoundTimeLeft((t) => t - 100), 100)
     return () => clearTimeout(id)
-  }, [state.phase, state.roundPhase, roundTimeLeft])
+  }, [mode, state.phase, state.roundPhase, roundTimeLeft])
 
   // Effect 2: auto-resolve as incorrect when the round timer expires
   useEffect(() => {
+    if (mode === "practice") return
     if (state.phase !== "playing" || state.roundPhase !== "deciding") return
     if (roundTimeLeft > 0) return
     handleAnswer(null)
-  }, [state.phase, state.roundPhase, roundTimeLeft, handleAnswer])
+  }, [mode, state.phase, state.roundPhase, roundTimeLeft, handleAnswer])
 
   // Effect 3: advance to next round or finish game after the result flash
   useEffect(() => {
+    if (mode === "practice") return
     if (state.phase !== "playing" || state.roundPhase !== "resolved") return
-    const scoreSnapshot = state.score
     const id = setTimeout(() => {
       if (state.round >= 10) {
-        finishGame(scoreSnapshot)
+        finishGame()
       } else {
         nextRound()
       }
     }, RESULT_FLASH_MS)
     return () => clearTimeout(id)
-  }, [state.phase, state.roundPhase, state.round, state.score, finishGame, nextRound])
+  }, [mode, state.phase, state.roundPhase, state.round, state.score, finishGame, nextRound])
 
   // ===== RENDER: INTRO =====
 
@@ -241,7 +242,7 @@ export function CoinCounterClient({ leaderboard, personalBest }: Props) {
               <h1 className="text-3xl font-bold mb-2">Coin Counter</h1>
               <p className="text-muted-foreground">
                 10 rounds. Add up the coin pile and pick the right total
-                before time runs out!
+                at your own pace or against the clock!
               </p>
             </div>
 
@@ -259,11 +260,14 @@ export function CoinCounterClient({ leaderboard, personalBest }: Props) {
                   amount from 3 choices.
                 </p>
                 <p>
-                  ⏱️ <strong>You have 10 seconds</strong> per round.
+                  ⏱️ <strong>Timed mode: 10 seconds</strong> per round. Practice has no timer.
                   Rounds get harder as you go!
                 </p>
               </CardContent>
             </Card>
+
+            <GameModePicker mode={mode} onChange={setMode} />
+            <p className="text-sm text-muted-foreground mb-3">{mode === "practice" ? "Practice leaderboard" : "Timed leaderboard"}</p>
 
             {leaderboard.length > 0 && (
               <Card className="mb-6">
@@ -325,14 +329,14 @@ export function CoinCounterClient({ leaderboard, personalBest }: Props) {
             <div className="flex justify-between items-center bg-green-50 border border-green-100 rounded-xl px-5 py-3 mb-4">
               <div className="text-center">
                 <div className="text-xs uppercase tracking-wide text-muted-foreground">
-                  Time Left
+                  {mode === "practice" ? "Practice" : "Time Left"}
                 </div>
                 <div
                   className={`text-2xl font-bold tabular-nums ${
                     isUrgent ? "text-red-600" : "text-foreground"
                   }`}
                 >
-                  {Math.ceil(roundTimeLeft / 1000)}s
+                  {mode === "practice" ? "No timer" : `${Math.ceil(roundTimeLeft / 1000)}s`}
                 </div>
               </div>
               <div className="text-center">
@@ -362,7 +366,7 @@ export function CoinCounterClient({ leaderboard, personalBest }: Props) {
             </div>
 
             {/* Per-round countdown bar */}
-            <div className="mb-4">
+            {mode === "timed" && <div className="mb-4">
               <div className="flex justify-between text-xs text-muted-foreground mb-1">
                 <span>Decide in...</span>
                 <span>{Math.ceil(roundTimeLeft / 1000)}s</span>
@@ -375,7 +379,7 @@ export function CoinCounterClient({ leaderboard, personalBest }: Props) {
                   style={{ width: `${timerPct}%` }}
                 />
               </div>
-            </div>
+            </div>}
 
             {/* Result flash */}
             {state.roundPhase === "resolved" && (
@@ -396,6 +400,12 @@ export function CoinCounterClient({ leaderboard, personalBest }: Props) {
                   </>
                 )}
               </div>
+            )}
+
+            {mode === "practice" && state.roundPhase === "resolved" && (
+              <Button className="w-full mb-4" onClick={() => state.round >= 10 ? finishGame() : nextRound()}>
+                {state.round >= 10 ? "See results" : "Next round"}
+              </Button>
             )}
 
             {/* Answer choices */}
@@ -429,6 +439,7 @@ export function CoinCounterClient({ leaderboard, personalBest }: Props) {
       <Header />
       <main className="flex-1 py-8">
         <div className="container max-w-2xl">
+          <ScoreSaveStatus gameId={"coin-counter" + (mode === "practice" ? "-practice" : "")} score={state.score} runId={runId} />
           <div className="text-center mb-8">
             <div className="text-5xl mb-3">
               {state.score >= 8 ? "🏆" : state.score >= 5 ? "🪙" : "💪"}
@@ -463,7 +474,7 @@ export function CoinCounterClient({ leaderboard, personalBest }: Props) {
               <CardContent className="pt-4 text-center">
                 <Trophy className="h-6 w-6 text-yellow-500 mx-auto mb-1" />
                 <div className="text-lg font-bold">
-                  You ranked #{currentUserRank} globally!
+                  Your best ranks #{currentUserRank} in {mode}!
                 </div>
               </CardContent>
             </Card>

@@ -57,6 +57,18 @@ test("rejects unknown gameId", () => {
   assert.strictEqual(isValidScore("not-a-real-game", 5), false)
 })
 
+test("checkout and practice scores enforce their own bounds", () => {
+  for (const id of ["checkout-challenge", "checkout-challenge-practice", "coin-counter-practice"]) {
+    assert.equal(isValidScore(id, 10), true)
+    assert.equal(isValidScore(id, 11), false)
+    assert.equal(isValidScore(id, -1), false)
+  }
+  assert.equal(isValidScore("savings-race-practice", 20000), true)
+  assert.equal(isValidScore("savings-race-practice", 20001), false)
+  assert.equal(isValidScore("constructor", 0), false)
+  assert.equal(isValidScore("budget-challenge-practice", 0), false)
+})
+
 if (failures > 0) {
   console.error(`\n${failures} test(s) failed`)
   process.exit(1)

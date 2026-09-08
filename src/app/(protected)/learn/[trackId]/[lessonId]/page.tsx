@@ -6,11 +6,12 @@ import { getTrack, getLesson, getNextLesson, isLessonUnlocked } from "@/content/
 import { getLessonProgress } from "@/actions/learn"
 import { LessonClient } from "./LessonClient"
 
-export default async function LessonPage({
-  params,
-}: {
-  params: { trackId: string; lessonId: string }
-}) {
+export default async function LessonPage(
+  props: {
+    params: Promise<{ trackId: string; lessonId: string }>
+  }
+) {
+  const params = await props.params;
   const track = getTrack(params.trackId)
   if (!track) notFound()
 

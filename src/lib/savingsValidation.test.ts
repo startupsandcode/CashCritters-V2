@@ -26,6 +26,13 @@ function assertThrows(fn: () => void, messageContains: string) {
   }
 }
 
+test("money inputs reject fractions of a cent, including amounts that round to zero", () => {
+  assert.throws(() => validateGoalInput("Bike", 0.001, null))
+  assert.throws(() => validateContributionInput(1.005, undefined))
+  assert.throws(() => validateContributionInput(1e-12, undefined))
+  assert.strictEqual(validateContributionInput(0.29, undefined).amount, 0.29)
+})
+
 test("validateGoalInput trims the name and preserves target/emoji", () => {
   const result = validateGoalInput("  New Bike  ", 100, "🚲")
   assert.strictEqual(result.name, "New Bike")

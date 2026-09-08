@@ -270,6 +270,9 @@ export function SavingsClient({ goals }: Props) {
               <Input
                 id="goal-target"
                 type="number"
+                min="0.01"
+                max="10000"
+                step="0.01"
                 value={newGoalTarget}
                 onChange={(e) => setNewGoalTarget(e.target.value)}
                 placeholder="100"
@@ -329,6 +332,9 @@ export function SavingsClient({ goals }: Props) {
               <Input
                 id="contribute-amount"
                 type="number"
+                min="0.01"
+                max="1000"
+                step="0.01"
                 value={contributeAmount}
                 onChange={(e) => setContributeAmount(e.target.value)}
                 placeholder="10"

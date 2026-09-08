@@ -75,6 +75,7 @@ export function isLessonUnlocked(
   lessonId: string,
   completed: Set<string>
 ): boolean {
+  if (!isTrackUnlocked(trackId, completed)) return false
   const track = getTrack(trackId)
   if (!track) return false
   const index = track.lessons.findIndex((l) => l.id === lessonId)

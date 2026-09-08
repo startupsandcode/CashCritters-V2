@@ -2,13 +2,12 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Header } from "@/components/layout/Header"
-import { saveGameScore } from "@/actions/games"
+import { ScoreSaveStatus } from "@/components/games/ScoreSaveStatus"
 import type { LeaderboardEntry } from "@/actions/games"
 import {
   sampleWeek,
@@ -148,22 +147,17 @@ interface Props {
 }
 
 export function BudgetChallengeClient({ leaderboard, personalBest }: Props) {
-  const router = useRouter()
+  const [runId, setRunId] = useState("")
   const [state, setState] = useState<GameState>(INITIAL_STATE)
 
   // --- Finish game — save score, refresh leaderboard, show result ---
-  const finishGame = useCallback(
-    (finalSavings: number) => {
-      setState((prev) => ({ ...prev, phase: "result" }))
-      saveGameScore("budget-challenge", finalSavings)
-        .then(() => router.refresh())
-        .catch(console.error)
-    },
-    [router]
-  )
+  const finishGame = useCallback(() => {
+    setState((prev) => ({ ...prev, phase: "result" }))
+  }, [])
 
   // --- Start / restart game ---
   const startGame = useCallback(() => {
+    setRunId(crypto.randomUUID())
     setState({
       phase: "allocating",
       week: sampleWeek(),
@@ -212,7 +206,7 @@ export function BudgetChallengeClient({ leaderboard, personalBest }: Props) {
       setState((prev) => ({ ...prev, phase: "reallocating" }))
     }
     if (state.phase === "resolving-second-half" && state.currentDayIndex >= SECOND_HALF_END) {
-      finishGame(state.balances.savings)
+      finishGame()
     }
   }, [state.phase, state.currentDayIndex, state.balances.savings, finishGame])
 
@@ -439,6 +433,7 @@ export function BudgetChallengeClient({ leaderboard, personalBest }: Props) {
       <Header />
       <main className="flex-1 py-8">
         <div className="container max-w-2xl">
+          <ScoreSaveStatus gameId={"budget-challenge"} score={state.balances.savings} runId={runId} />
           <div className="text-center mb-8">
             <div className="text-5xl mb-3">
               {state.balances.savings >= 2000

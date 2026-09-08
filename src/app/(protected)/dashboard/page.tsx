@@ -11,9 +11,15 @@ import { Progress } from "@/components/ui/progress"
 import { BookOpen, Gamepad2, Award, Star, Coins, PiggyBank } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { getLessonProgress } from "@/actions/learn"
+import { getSavingsGoals } from "@/actions/savings"
+import { getLearningSummary } from "@/lib/learningProgress"
 
 export default async function DashboardPage() {
   const session = await auth()
+  const [completed, goals] = await Promise.all([getLessonProgress(), getSavingsGoals()])
+  const learning = getLearningSummary(completed)
+  const totalSaved = goals.reduce((sum, goal) => sum + goal.currentAmount, 0)
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -36,7 +42,8 @@ export default async function DashboardPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Progress value={0} className="h-2 mb-2" />
+              <Progress value={learning.percent} aria-label="Lessons completed" className="h-2 mb-2" />
+              <p className="text-sm mb-3">{learning.completedCount} of {learning.totalCount} lessons complete ({learning.percent}%)</p>
               <div className="flex justify-between text-sm text-muted-foreground">
                 <span>Beginner</span>
                 <span>Intermediate</span>
@@ -54,9 +61,9 @@ export default async function DashboardPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="mb-4">Your next lesson: &quot;What is Money?&quot;</p>
-                <Link href="/learn">
-                  <Button>Start Lesson</Button>
+                <p className="mb-4">{learning.nextLesson ? `Your next lesson: ${learning.nextLesson.lesson.title}` : "You completed every lesson! Revisit a favorite to keep practicing."}</p>
+                <Link href={learning.nextLesson ? `/learn/${learning.nextLesson.trackId}/${learning.nextLesson.lesson.id}` : "/learn"}>
+                  <Button>{learning.nextLesson ? "Continue Learning" : "Review Lessons"}</Button>
                 </Link>
               </CardContent>
             </Card>
@@ -84,7 +91,7 @@ export default async function DashboardPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="mb-4">Track your savings goals and progress</p>
+                <p className="mb-4">{goals.length ? `$${totalSaved.toFixed(2)} saved across ${goals.length} goal${goals.length === 1 ? "" : "s"}` : "Create your first savings goal and start making progress."}</p>
                 <Link href="/savings">
                   <Button variant="outline">View Savings</Button>
                 </Link>
@@ -113,12 +120,12 @@ export default async function DashboardPage() {
                   {
                     name: "Money Basics",
                     icon: <Coins className="h-8 w-8 text-blue-500" />,
-                    unlocked: false,
+                    unlocked: learning.completedTrackIds.includes("money-basics"),
                   },
                   {
                     name: "Saving Star",
                     icon: <PiggyBank className="h-8 w-8 text-green-500" />,
-                    unlocked: false,
+                    unlocked: goals.some(goal => goal.currentAmount >= goal.targetAmount),
                   },
                 ].map((achievement, index) => (
                   <div

@@ -72,6 +72,11 @@ The integration suite calls the local app's server actions, verifies persisted d
 
 For Vercel deployment tooling, install the CLI separately with `npm i -g vercel`.
 
+Prisma 6.19.3 pins a vulnerable `deepmerge-ts` release. The scoped npm override
+uses 8.0.0 to fix [GHSA-ggr8-5vv4-36mx](https://github.com/advisories/GHSA-ggr8-5vv4-36mx).
+Regression tests cover recursive input and Prisma configuration loading. Recheck
+and remove the override when upgrading Prisma to a release that includes the fix.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).

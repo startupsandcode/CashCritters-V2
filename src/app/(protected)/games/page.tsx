@@ -12,6 +12,14 @@ import Link from "next/link"
 
 const games = [
   {
+    id: "checkout-challenge",
+    title: "Checkout Challenge",
+    description: "Run the Critter Corner shop: add up items and give the right change",
+    icon: <ShoppingCart className="h-8 w-8 text-primary" />,
+    difficulty: "Easy to tricky · Timed or practice",
+    route: "/games/checkout-challenge",
+  },
+  {
     id: "coin-counter",
     title: "Coin Counter",
     description: "Practice counting coins and making change",

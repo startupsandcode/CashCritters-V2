@@ -21,6 +21,7 @@
 *.pem
 
 # local env files
+.env
 .env*.local
 
 # debug
@@ -48,3 +49,6 @@ firebase-service-account.json
 
 # internal planning docs
 docs/superpowers
+
+.vercel
+.env*

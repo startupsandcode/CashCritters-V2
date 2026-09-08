@@ -2,14 +2,20 @@
 
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
+import { isLessonUnlocked } from "@/content/lessons"
+import { scoreLessonAnswers } from "@/lib/learningProgress"
+import { revalidatePath } from "next/cache"
 
 export async function completeLesson(
   trackId: string,
   lessonId: string,
-  score: number
+  answers: number[]
 ): Promise<void> {
   const session = await auth()
-  if (!session?.user?.id) return
+  if (!session?.user?.id) throw new Error("Unauthenticated")
+  const score = scoreLessonAnswers(trackId, lessonId, answers)
+  const completed = await getLessonProgress()
+  if (!isLessonUnlocked(trackId, lessonId, completed)) throw new Error("Complete the previous lessons first")
 
   await prisma.learningProgress.upsert({
     where: {
@@ -33,6 +39,8 @@ export async function completeLesson(
       completedAt: new Date(),
     },
   })
+  revalidatePath("/learn", "layout")
+  revalidatePath("/dashboard")
 }
 
 export async function getLessonProgress(): Promise<Set<string>> {

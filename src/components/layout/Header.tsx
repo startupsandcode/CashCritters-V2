@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation"
 import { useSession } from "next-auth/react"
 import { Button } from "@/components/ui/button"
 import { Menu } from "lucide-react"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet"
 import { SignOutButton } from "@/components/auth/SignOutButton"
 import { useState } from "react"
 
@@ -62,6 +62,8 @@ export function Header() {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[240px] sm:w-[300px]">
+                  <SheetTitle>Navigation</SheetTitle>
+                  <SheetDescription className="sr-only">Explore Cash Critters and manage your session.</SheetDescription>
                   <nav className="flex flex-col gap-4 mt-8">
                     {navItems.map((item) => (
                       <Link
@@ -96,6 +98,8 @@ export function Header() {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="right" className="w-[240px] sm:w-[300px]">
+                  <SheetTitle>Welcome to Cash Critters</SheetTitle>
+                  <SheetDescription className="sr-only">Sign in or create an account.</SheetDescription>
                   <nav className="flex flex-col gap-4 mt-8">
                     <Link
                       href="/signin"

@@ -8,11 +8,12 @@ import { Card, CardContent } from "@/components/ui/card"
 import { getTrack, isTrackUnlocked, isLessonUnlocked } from "@/content/lessons"
 import { getLessonProgress } from "@/actions/learn"
 
-export default async function TrackOverviewPage({
-  params,
-}: {
-  params: { trackId: string }
-}) {
+export default async function TrackOverviewPage(
+  props: {
+    params: Promise<{ trackId: string }>
+  }
+) {
+  const params = await props.params;
   const track = getTrack(params.trackId)
   if (!track) notFound()
 

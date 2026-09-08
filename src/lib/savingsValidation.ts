@@ -32,6 +32,9 @@ export function validateGoalInput(
   if (targetAmount > 10000) {
     throw new Error("Target amount must be $10,000 or less")
   }
+  if (Math.round(targetAmount * 100) < 1 || Math.abs(targetAmount * 100 - Math.round(targetAmount * 100)) > 1e-8) {
+    throw new Error("Target amount must use whole cents (at most two decimal places)")
+  }
 
   const resolvedEmoji =
     emoji && (EMOJI_OPTIONS as readonly string[]).includes(emoji)
@@ -57,6 +60,9 @@ export function validateContributionInput(
   }
   if (amount > 1000) {
     throw new Error("Amount must be $1,000 or less")
+  }
+  if (Math.round(amount * 100) < 1 || Math.abs(amount * 100 - Math.round(amount * 100)) > 1e-8) {
+    throw new Error("Amount must use whole cents (at most two decimal places)")
   }
 
   const trimmedNote = note?.trim() || null

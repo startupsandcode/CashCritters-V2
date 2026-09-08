@@ -1,13 +1,13 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { CheckCircle2, XCircle, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { completeLesson } from "@/actions/learn"
 import type { Lesson } from "@/content/lessons"
 
-const PASSING_SCORE = 4
+import { PASSING_SCORE } from "@/lib/quiz"
 
 interface LessonClientProps {
   lesson: Lesson
@@ -23,7 +23,7 @@ export function LessonClient({
   isAlreadyCompleted,
 }: LessonClientProps) {
   const router = useRouter()
-  const [isPending, startTransition] = useTransition()
+  const [isPending, setIsPending] = useState(false)
   const [answers, setAnswers] = useState<(number | null)[]>(
     lesson.quiz.map(() => null)
   )
@@ -31,6 +31,7 @@ export function LessonClient({
     lesson.quiz.map(() => false)
   )
   const [resetKey, setResetKey] = useState(0)
+  const [saveError, setSaveError] = useState<string | null>(null)
 
   const allAnswered = answers.every((a) => a !== null)
   const score = answers.filter(
@@ -58,15 +59,23 @@ export function LessonClient({
     setResetKey((k) => k + 1)
   }
 
-  function handleComplete() {
-    startTransition(async () => {
-      await completeLesson(trackId, lesson.id, score)
+  async function handleComplete() {
+    if (isPending || !passed) return
+    setSaveError(null)
+    setIsPending(true)
+    try {
+      await completeLesson(trackId, lesson.id, answers as number[])
       if (nextLessonId) {
         router.push(`/learn/${trackId}/${nextLessonId}`)
       } else {
         router.push(`/learn/${trackId}`)
       }
-    })
+      router.refresh()
+    } catch {
+      setSaveError("We couldn't save your progress. Please try again. Your answers are still here.")
+    } finally {
+      setIsPending(false)
+    }
   }
 
   return (
@@ -140,6 +149,7 @@ export function LessonClient({
         </div>
 
         {/* Result bar */}
+        {saveError && <p role="alert" className="mt-4 text-sm text-destructive">{saveError}</p>}
         {allAnswered && (
           <div className="mt-8 rounded-lg border bg-muted/50 p-4">
             <p className="font-semibold mb-3">

@@ -3,6 +3,8 @@
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { validateGoalInput, validateContributionInput } from "@/lib/savingsValidation"
+import { revalidatePath } from "next/cache"
+import { redirect } from "next/navigation"
 
 export interface SavingsGoalWithContributions {
   id: string
@@ -22,7 +24,7 @@ export interface SavingsGoalWithContributions {
 
 export async function getSavingsGoals(): Promise<SavingsGoalWithContributions[]> {
   const session = await auth()
-  if (!session?.user?.id) throw new Error("Unauthenticated")
+  if (!session?.user?.id) redirect("/signin")
 
   const goals = await prisma.savingsGoal.findMany({
     where: { userId: session.user.id },
@@ -73,6 +75,8 @@ export async function createSavingsGoal(
       emoji: validated.emoji,
     },
   })
+  revalidatePath("/savings")
+  revalidatePath("/dashboard")
 }
 
 export async function addContribution(
@@ -101,6 +105,8 @@ export async function addContribution(
       data: { currentAmount: { increment: validated.amount } },
     }),
   ])
+  revalidatePath("/savings")
+  revalidatePath("/dashboard")
 }
 
 export async function deleteSavingsGoal(goalId: string): Promise<void> {
@@ -111,4 +117,6 @@ export async function deleteSavingsGoal(goalId: string): Promise<void> {
   if (!goal || goal.userId !== session.user.id) throw new Error("Not found")
 
   await prisma.savingsGoal.delete({ where: { id: goalId } })
+  revalidatePath("/savings")
+  revalidatePath("/dashboard")
 }

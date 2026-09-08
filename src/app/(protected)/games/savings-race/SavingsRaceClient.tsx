@@ -2,11 +2,11 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Header } from "@/components/layout/Header"
-import { saveGameScore } from "@/actions/games"
+import { GameModePicker, type GameMode } from "@/components/games/GameModePicker"
+import { ScoreSaveStatus } from "@/components/games/ScoreSaveStatus"
 import type { LeaderboardEntry } from "@/actions/games"
 import {
   sampleScenarios,
@@ -58,10 +58,14 @@ function formatTime(ms: number): string {
 interface Props {
   leaderboard: LeaderboardEntry[]
   personalBest: number | null
+  practice: { topScores: LeaderboardEntry[]; personalBest: number | null }
 }
 
-export function SavingsRaceClient({ leaderboard, personalBest }: Props) {
-  const router = useRouter()
+export function SavingsRaceClient({ leaderboard: timedLeaderboard, personalBest: timedBest, practice }: Props) {
+  const [mode, setMode] = useState<GameMode>("timed")
+  const leaderboard = mode === "practice" ? practice.topScores : timedLeaderboard
+  const personalBest = mode === "practice" ? practice.personalBest : timedBest
+  const [runId, setRunId] = useState("")
   const [state, setState] = useState<GameState>(INITIAL_STATE)
   const [roundTimeLeft, setRoundTimeLeft] = useState(ROUND_DURATION_MS)
   const hasDecidedRef = useRef(false)
@@ -145,15 +149,9 @@ export function SavingsRaceClient({ leaderboard, personalBest }: Props) {
   }, [])
 
   // --- Finish game — save score, refresh leaderboard, show result ---
-  const finishGame = useCallback(
-    (finalSavings: number) => {
-      setState((prev) => ({ ...prev, phase: "result" }))
-      saveGameScore("savings-race", finalSavings)
-        .then(() => router.refresh())
-        .catch(console.error)
-    },
-    [router]
-  )
+  const finishGame = useCallback(() => {
+    setState((prev) => ({ ...prev, phase: "result" }))
+  }, [])
 
   // --- Reset to intro screen ---
   const resetToIntro = useCallback(() => {
@@ -164,6 +162,7 @@ export function SavingsRaceClient({ leaderboard, personalBest }: Props) {
 
   // --- Start / restart game ---
   const startGame = useCallback(() => {
+    setRunId(crypto.randomUUID())
     hasDecidedRef.current = false
     setRoundTimeLeft(ROUND_DURATION_MS)
     setState({
@@ -179,34 +178,36 @@ export function SavingsRaceClient({ leaderboard, personalBest }: Props) {
 
   // Effect 1: Per-round countdown tick (100ms intervals)
   useEffect(() => {
+    if (mode === "practice") return
     if (state.phase !== "playing" || state.roundPhase !== "deciding") return
     if (roundTimeLeft <= 0) return
     const id = setTimeout(() => {
       setRoundTimeLeft((t) => t - 100)
     }, 100)
     return () => clearTimeout(id)
-  }, [state.phase, state.roundPhase, roundTimeLeft])
+  }, [mode, state.phase, state.roundPhase, roundTimeLeft])
 
   // Effect 2: Auto-spend when round timer expires
   useEffect(() => {
+    if (mode === "practice") return
     if (state.phase !== "playing" || state.roundPhase !== "deciding") return
     if (roundTimeLeft > 0) return
     handleDecision("spend")
-  }, [state.phase, state.roundPhase, roundTimeLeft, handleDecision])
+  }, [mode, state.phase, state.roundPhase, roundTimeLeft, handleDecision])
 
   // Effect 3: Advance to next round or finish game after result flash
   useEffect(() => {
+    if (mode === "practice") return
     if (state.phase !== "playing" || state.roundPhase !== "resolved") return
-    const savingsSnapshot = state.savings
     const id = setTimeout(() => {
       if (state.round >= 10) {
-        finishGame(savingsSnapshot)
+        finishGame()
       } else {
         nextRound()
       }
     }, RESULT_FLASH_MS)
     return () => clearTimeout(id)
-  }, [state.phase, state.roundPhase, state.round, state.savings, finishGame, nextRound])
+  }, [mode, state.phase, state.roundPhase, state.round, state.savings, finishGame, nextRound])
 
   // ===== RENDER: INTRO =====
 
@@ -239,11 +240,13 @@ export function SavingsRaceClient({ leaderboard, personalBest }: Props) {
                   Decide to protect your savings or spend from them.
                 </p>
                 <p>
-                  ⏱️ <strong>You have 6 seconds</strong> to decide each round.
-                  Run out of time → auto-spend!
+                  ⏱️ <strong>Timed mode: 6 seconds</strong> to decide, then auto-spend. Practice has no timer.
                 </p>
               </CardContent>
             </Card>
+
+            <GameModePicker mode={mode} onChange={setMode} />
+            <p className="text-sm text-muted-foreground mb-3">{mode === "practice" ? "Practice leaderboard" : "Timed leaderboard"}</p>
 
             {leaderboard.length > 0 && (
               <Card className="mb-6">
@@ -312,14 +315,14 @@ export function SavingsRaceClient({ leaderboard, personalBest }: Props) {
             <div className="flex justify-between items-center bg-green-50 border border-green-100 rounded-xl px-5 py-3 mb-4">
               <div className="text-center">
                 <div className="text-xs uppercase tracking-wide text-muted-foreground">
-                  Time Left
+                  {mode === "practice" ? "Practice" : "Time Left"}
                 </div>
                 <div
                   className={`text-2xl font-bold tabular-nums ${
                     totalTimeLeftMs < 15000 ? "text-red-600" : "text-foreground"
                   }`}
                 >
-                  {formatTime(totalTimeLeftMs)}
+                  {mode === "practice" ? "No timer" : formatTime(totalTimeLeftMs)}
                 </div>
               </div>
               <div className="text-center">
@@ -372,7 +375,7 @@ export function SavingsRaceClient({ leaderboard, personalBest }: Props) {
             </div>
 
             {/* Per-round countdown bar */}
-            <div className="mb-4">
+            {mode === "timed" && <div className="mb-4">
               <div className="flex justify-between text-xs text-muted-foreground mb-1">
                 <span>Decide in...</span>
                 <span>{Math.ceil(roundTimeLeft / 1000)}s</span>
@@ -385,7 +388,7 @@ export function SavingsRaceClient({ leaderboard, personalBest }: Props) {
                   style={{ width: `${timerPct}%` }}
                 />
               </div>
-            </div>
+            </div>}
 
             {/* Result flash */}
             {state.roundPhase === "resolved" && state.lastOutcome && (
@@ -410,6 +413,12 @@ export function SavingsRaceClient({ leaderboard, personalBest }: Props) {
                   </>
                 )}
               </div>
+            )}
+
+            {mode === "practice" && state.roundPhase === "resolved" && (
+              <Button className="w-full mb-4" onClick={() => state.round >= 10 ? finishGame() : nextRound()}>
+                {state.round >= 10 ? "See results" : "Next round"}
+              </Button>
             )}
 
             {/* Decision buttons */}
@@ -463,6 +472,7 @@ export function SavingsRaceClient({ leaderboard, personalBest }: Props) {
       <Header />
       <main className="flex-1 py-8">
         <div className="container max-w-2xl">
+          <ScoreSaveStatus gameId={"savings-race" + (mode === "practice" ? "-practice" : "")} score={state.savings} runId={runId} />
           <div className="text-center mb-8">
             <div className="text-5xl mb-3">
               {state.savings >= maxPossibleCents * 0.8
@@ -503,7 +513,7 @@ export function SavingsRaceClient({ leaderboard, personalBest }: Props) {
               <CardContent className="pt-4 text-center">
                 <Trophy className="h-6 w-6 text-yellow-500 mx-auto mb-1" />
                 <div className="text-lg font-bold">
-                  You ranked #{currentUserRank} globally!
+                  Your best ranks #{currentUserRank} in {mode}!
                 </div>
               </CardContent>
             </Card>

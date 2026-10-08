@@ -2,12 +2,8 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**',
-      },
-    ],
+    // No remote images are currently optimized. Add only specific trusted hosts if needed.
+    remotePatterns: [],
   },
 };
 
